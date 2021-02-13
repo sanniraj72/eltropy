@@ -13,16 +13,17 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type response struct {
-	code int
-	msg  string
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 func AdminSignup(rw http.ResponseWriter, r *http.Request) {
 
-	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Content-Type", "application/json")
 	var admin model.Admin
 	err := json.NewDecoder(r.Body).Decode(&admin)
 	if err != nil {
@@ -34,43 +35,35 @@ func AdminSignup(rw http.ResponseWriter, r *http.Request) {
 	// check for duplicate username
 	client, err := db.GetMongoClient()
 	if err != nil {
-		log.Fatal(err)
 		json.NewEncoder(rw).Encode(err)
 		return
 	}
 	collection := client.Database(db.DB).Collection(db.ADMIN_COLLECTION)
-	var existingAdmin model.Admin
-	err = collection.FindOne(context.TODO(), bson.M{"username": admin.UserName}).Decode(&existingAdmin)
-	if err != nil {
-		log.Fatal(err)
-		json.NewEncoder(rw).Encode(err)
-		return
-	}
-	if admin.UserName == existingAdmin.UserName {
+	sr := collection.FindOne(context.TODO(), bson.M{"username": admin.UserName})
+	if sr.Err() == mongo.ErrNoDocuments {
+		// Create new entry
+		admin.Password = base64.StdEncoding.EncodeToString([]byte(admin.Password))
+		if err != nil {
+			json.NewEncoder(rw).Encode(err)
+			return
+		}
+		_, err = collection.InsertOne(context.TODO(), admin)
+		if err != nil {
+			json.NewEncoder(rw).Encode(err)
+			return
+		}
+		rw.WriteHeader(http.StatusCreated)
 		json.NewEncoder(rw).Encode(response{
-			code: http.StatusConflict,
-			msg:  "Admin user already exist",
+			Code: http.StatusCreated,
+			Msg:  "Registered as an admin Successfully.",
 		})
-		return
+	} else {
+		rw.WriteHeader(http.StatusConflict)
+		json.NewEncoder(rw).Encode(response{
+			Code: http.StatusConflict,
+			Msg:  "Admin user already exist",
+		})
 	}
-	admin.Password = base64.StdEncoding.EncodeToString([]byte(admin.Password))
-	if err != nil {
-		json.NewEncoder(rw).Encode(err)
-		return
-	}
-	_, err = collection.InsertOne(context.TODO(), admin)
-	if err != nil {
-		json.NewEncoder(rw).Encode(err)
-		return
-	}
-	p := struct {
-		code int
-		msg  string
-	}{
-		code: http.StatusCreated,
-		msg:  "Registered as an admin Successfully.",
-	}
-	json.NewEncoder(rw).Encode(p)
 }
 
 func AdminSignin(rw http.ResponseWriter, r *http.Request) {
