@@ -116,3 +116,73 @@ func DeleteEmployee(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 }
+
+// EmployeeSignin - Employee signin handler
+func EmployeeSignin(rw http.ResponseWriter, r *http.Request) {
+
+	rw.Header().Add("Content-Type", "application/json")
+	var user model.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		rw.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(rw).Encode(err)
+		return
+	}
+
+	client, err := helper.GetMongoClient()
+	collection := client.Database(helper.DB).Collection(helper.EmployeeCollection)
+	if sr := collection.FindOne(context.TODO(), bson.M{"empId": user.Username}); sr.Err() == nil {
+		// Validate username and password is correct or not
+		var emp model.Employee
+		if err = sr.Decode(&emp); err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(rw).Encode(err)
+			return
+		}
+		password, _ := base64.StdEncoding.DecodeString(emp.Password)
+		if user.Username == emp.EmpId && user.Password == string(password) {
+			// Create token if password and username is correct
+			var td *helper.TokenDetails
+			if td, err = helper.CreateToken(user.Username); err != nil {
+				rw.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(rw).Encode(err)
+				return
+			}
+			err = helper.CreateAuth(user.Username, td)
+			if err != nil {
+				rw.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(rw).Encode(err)
+				return
+			}
+			json.NewEncoder(rw).Encode(struct {
+				Code  int    `json:"code"`
+				Msg   string `json:"msg"`
+				Token string `json:"token"`
+			}{
+				Code:  http.StatusOK,
+				Msg:   "You have logged in successfully",
+				Token: td.Token,
+			})
+		} else {
+			rw.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(rw).Encode(model.Response{
+				Code: http.StatusUnauthorized,
+				Msg:  "username or password mismatch",
+			})
+		}
+	} else {
+		rw.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(rw).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "username or password mismatch.",
+		})
+	}
+}
+
+// EmployeeSignout - Employee signout handler
+func EmployeeSignout(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json")
+	helper.Signout(w, r)
+
+}

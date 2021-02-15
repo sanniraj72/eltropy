@@ -123,29 +123,5 @@ func AdminSignin(rw http.ResponseWriter, r *http.Request) {
 func AdminSignout(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
-	accessDetails, err := helper.ExtractToken(r)
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(model.Response{
-			Code: http.StatusUnauthorized,
-			Msg:  "Unauthorized",
-		})
-		return
-	}
-
-	deleted, err := helper.DeleteAuth(accessDetails.UUID)
-	if err != nil || deleted == 0 {
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(model.Response{
-			Code: http.StatusUnauthorized,
-			Msg:  "Unauthorized",
-		})
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(model.Response{
-		Code: http.StatusOK,
-		Msg:  "Successfully logged out",
-	})
+	helper.Signout(w, r)
 }

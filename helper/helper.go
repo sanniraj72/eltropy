@@ -2,6 +2,8 @@ package helper
 
 import (
 	"context"
+	"eltropy/model"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -162,4 +164,33 @@ func FetchAuth(ad *AccessDetails) (string, error) {
 		return "", err
 	}
 	return username, nil
+}
+
+// Signout - Signout implementation for all user
+func Signout(w http.ResponseWriter, r *http.Request) {
+	accessDetails, err := ExtractToken(r)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "Unauthorized",
+		})
+		return
+	}
+
+	deleted, err := DeleteAuth(accessDetails.UUID)
+	if err != nil || deleted == 0 {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "Unauthorized",
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(model.Response{
+		Code: http.StatusOK,
+		Msg:  "Successfully logged out",
+	})
 }

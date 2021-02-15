@@ -22,5 +22,7 @@ func main() {
 	router.HandleFunc("/admin/signout", admin.AdminSignout).Methods(http.MethodPost)
 	router.HandleFunc("/employee/add", employee.AddEmployee).Methods(http.MethodPost)
 	router.HandleFunc("/employee/delete", employee.DeleteEmployee).Methods(http.MethodDelete)
+	router.HandleFunc("/employee/signin", employee.EmployeeSignin).Methods(http.MethodPost)
+	router.HandleFunc("/employee/signout", employee.EmployeeSignout).Methods(http.MethodPost)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
