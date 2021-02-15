@@ -37,6 +37,8 @@ const (
 	AdminCollection = "admin"
 	// EmployeeCollection - employee collection
 	EmployeeCollection = "employee"
+	// CustomerCollection - customer collection
+	CustomerCollection = "customer"
 )
 
 // TokenDetails - detail for token

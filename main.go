@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"eltropy/admin"
+	"eltropy/customer"
 	"eltropy/employee"
 	"eltropy/helper"
 
@@ -24,5 +25,7 @@ func main() {
 	router.HandleFunc("/employee/delete", employee.DeleteEmployee).Methods(http.MethodDelete)
 	router.HandleFunc("/employee/signin", employee.EmployeeSignin).Methods(http.MethodPost)
 	router.HandleFunc("/employee/signout", employee.EmployeeSignout).Methods(http.MethodPost)
+	router.HandleFunc("/customer/add", customer.AddCustomer).Methods(http.MethodPost)
+	router.HandleFunc("/customer/delete", customer.DeleteCustomer).Methods(http.MethodDelete)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
