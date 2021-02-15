@@ -2,24 +2,18 @@ package admin
 
 import (
 	"context"
-	"eltropy/db"
+	"eltropy/helper"
 	"encoding/base64"
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"eltropy/model"
 
-	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type response struct {
-	Code int    `json:"code"`
-	Msg  string `json:"msg"`
-}
-
+// AdminSignup - Admin signup handler
 func AdminSignup(rw http.ResponseWriter, r *http.Request) {
 
 	rw.Header().Set("Content-Type", "application/json")
@@ -30,14 +24,15 @@ func AdminSignup(rw http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(rw).Encode(err)
 		return
 	}
+
 	// check for duplicate username
-	client, err := db.GetMongoClient()
+	client, err := helper.GetMongoClient()
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(rw).Encode(err)
 		return
 	}
-	collection := client.Database(db.DB).Collection(db.ADMIN_COLLECTION)
+	collection := client.Database(helper.DB).Collection(helper.AdminCollection)
 	sr := collection.FindOne(context.TODO(), bson.M{"username": admin.UserName})
 	if sr.Err() == mongo.ErrNoDocuments {
 		// Create new entry
@@ -49,19 +44,20 @@ func AdminSignup(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 		rw.WriteHeader(http.StatusCreated)
-		json.NewEncoder(rw).Encode(response{
+		json.NewEncoder(rw).Encode(model.Response{
 			Code: http.StatusCreated,
 			Msg:  "Registered as an admin Successfully.",
 		})
 	} else {
 		rw.WriteHeader(http.StatusConflict)
-		json.NewEncoder(rw).Encode(response{
+		json.NewEncoder(rw).Encode(model.Response{
 			Code: http.StatusConflict,
 			Msg:  "Admin user already exist",
 		})
 	}
 }
 
+// AdminSignin - Admin signin handler
 func AdminSignin(rw http.ResponseWriter, r *http.Request) {
 
 	rw.Header().Add("Content-Type", "application/json")
@@ -72,8 +68,9 @@ func AdminSignin(rw http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(rw).Encode(err)
 		return
 	}
-	client, err := db.GetMongoClient()
-	collection := client.Database(db.DB).Collection(db.ADMIN_COLLECTION)
+
+	client, err := helper.GetMongoClient()
+	collection := client.Database(helper.DB).Collection(helper.AdminCollection)
 	if sr := collection.FindOne(context.TODO(), bson.M{"username": user.Username}); sr.Err() == nil {
 		// Validate username and password is correct or not
 		var admin model.Admin
@@ -85,8 +82,14 @@ func AdminSignin(rw http.ResponseWriter, r *http.Request) {
 		password, _ := base64.StdEncoding.DecodeString(admin.Password)
 		if user.Username == admin.UserName && user.Password == string(password) {
 			// Create token if password and username is correct
-			var token string
-			if token, err = createToken(user.Username); err != nil {
+			var td *helper.TokenDetails
+			if td, err = helper.CreateToken(user.Username); err != nil {
+				rw.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(rw).Encode(err)
+				return
+			}
+			err = helper.CreateAuth(user.Username, td)
+			if err != nil {
 				rw.WriteHeader(http.StatusInternalServerError)
 				json.NewEncoder(rw).Encode(err)
 				return
@@ -98,34 +101,51 @@ func AdminSignin(rw http.ResponseWriter, r *http.Request) {
 			}{
 				Code:  http.StatusOK,
 				Msg:   "You have logged in successfully",
-				Token: token,
+				Token: td.Token,
 			})
 		} else {
 			rw.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(rw).Encode(response{
+			json.NewEncoder(rw).Encode(model.Response{
 				Code: http.StatusUnauthorized,
 				Msg:  "username or password mismatch",
 			})
 		}
 	} else {
 		rw.WriteHeader(http.StatusForbidden)
-		json.NewEncoder(rw).Encode(response{
+		json.NewEncoder(rw).Encode(model.Response{
 			Code: http.StatusForbidden,
 			Msg:  "You dont't have admin access.",
 		})
 	}
 }
 
-func createToken(username string) (string, error) {
-	var err error
-	atClaims := jwt.MapClaims{}
-	atClaims["authorized"] = true
-	atClaims["username"] = username
-	atClaims["expiry"] = time.Now().Add(time.Minute * 15).Unix()
-	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	token, err := at.SignedString([]byte("secret"))
+// AdminSignout - Admin signout handler
+func AdminSignout(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json")
+	accessDetails, err := helper.ExtractToken(r)
 	if err != nil {
-		return "", err
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "Unauthorized",
+		})
+		return
 	}
-	return token, nil
+
+	deleted, err := helper.DeleteAuth(accessDetails.UUID)
+	if err != nil || deleted == 0 {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "Unauthorized",
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(model.Response{
+		Code: http.StatusOK,
+		Msg:  "Successfully logged out",
+	})
 }
