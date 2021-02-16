@@ -29,5 +29,6 @@ func main() {
 	router.HandleFunc("/customer/add", customer.AddCustomer).Methods(http.MethodPost)
 	router.HandleFunc("/customer/delete", customer.DeleteCustomer).Methods(http.MethodDelete)
 	router.HandleFunc("/account/add", account.CreateAccount).Methods(http.MethodPost)
+	router.HandleFunc("/customer/kyc", customer.UpdateKYC).Methods(http.MethodPost)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

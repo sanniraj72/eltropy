@@ -8,6 +8,11 @@ type Customer struct {
 	Email      string    `bson:"email"`
 	BranchName string    `bson:"branchName"`
 	BranchAdd  string    `bson:"branchAdd"`
-	KYC        bool      `bson:"kyc"`
+	Kyc        Kyc       `bson:"kyc"`
 	Accounts   []Account `bson:"accounts"`
+}
+
+type Kyc struct {
+	IsDone bool   `bson:"isDone"`
+	KycDoc string `bson:"doc"`
 }
