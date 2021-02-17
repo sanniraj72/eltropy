@@ -260,3 +260,59 @@ func UpdateKYC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// GetCustomer - get customer detail
+func GetCustomer(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json")
+	// Extract token
+	ad, err := helper.ExtractToken(r)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "Unauthorized",
+		})
+		return
+	}
+
+	// Fetch auth from redis
+	username, err := helper.FetchAuth(ad)
+	if username == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "Unauthorized",
+		})
+		return
+	}
+
+	values := r.URL.Query()
+	empID := values.Get("empId")
+	custID := values.Get("custId")
+
+	if empID == username {
+		// Get customer details
+		client, _ := helper.GetMongoClient()
+		collection := client.Database(helper.DB).Collection(helper.CustomerCollection)
+		sr := collection.FindOne(context.TODO(), bson.M{"custId": custID})
+		if sr.Err() != nil {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(model.Response{
+				Code: http.StatusNotFound,
+				Msg:  "customer not found, custId - " + custID,
+			})
+			return
+		}
+		var customer model.Customer
+		sr.Decode(&customer)
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(customer)
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "unauthorized",
+		})
+	}
+}

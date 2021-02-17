@@ -16,3 +16,11 @@ type Transaction struct {
 	Amount float64 `bson:"amount"`
 	Type   string  `bson:"type"` // debited/credited
 }
+
+type Transfer struct {
+	SrcAccount   string  `json:"srcAccount"`
+	SrcCustomer  string  `json:"srcCustomer"`
+	DestAccount  string  `json:"destAccount"`
+	DestCustomer string  `json:"destCustomer"`
+	Amount       float64 `json:"amount"`
+}
