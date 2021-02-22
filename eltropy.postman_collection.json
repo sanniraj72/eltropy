@@ -1,0 +1,621 @@
+{
+	"info": {
+		"_postman_id": "ea19cb8b-1a91-46a9-8f6c-1048212a60d5",
+		"name": "eltropy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sanni Raj\",\r\n    \"address\": \"Bangalore\",\r\n    \"phone\": \"7406551291\",\r\n    \"email\": \"sanniraj72@gmail.com\",\r\n    \"username\": \"sanniraj73@gmail.com\",\r\n    \"password\": \"test@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"sanniraj72@gmail.com\",\r\n    \"password\": \"test@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/admin/signin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add employee",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTMzOTY0NDgsInVzZXJuYW1lIjoic2FubmlyYWo3MkBnbWFpbC5jb20iLCJ1dWlkIjoiZTNlOGU1MzYtZTRiYi00N2RhLTg5ZjktODQyOGZiNzYwYmFjIn0.DJkgZ9Pfo-rWjOqP74HOP9-Hq7C-xiHB-2utVDmVNh4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"empId\": \"EMP0002\",\r\n    \"password\": \"emp@123\",\r\n    \"name\": \"Sanni Raj\",\r\n    \"address\": \"Bangalore\",\r\n    \"phone\": \"7406551291\",\r\n    \"email\": \"sanniraj72@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/employee/add?username=sanniraj72@gmail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employee",
+								"add"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "sanniraj72@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete employee",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTMzOTY0NDgsInVzZXJuYW1lIjoic2FubmlyYWo3MkBnbWFpbC5jb20iLCJ1dWlkIjoiZTNlOGU1MzYtZTRiYi00N2RhLTg5ZjktODQyOGZiNzYwYmFjIn0.DJkgZ9Pfo-rWjOqP74HOP9-Hq7C-xiHB-2utVDmVNh4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"EMP0002\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/employee/delete?username=sanniraj72@gmail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employee",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "sanniraj72@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTMzODYxMTksInVzZXJuYW1lIjoic2FubmlyYWo3MkBnbWFpbC5jb20iLCJ1dWlkIjoiYzkxOTYyMDQtMjZiNy00NTFjLTlkZGEtNGI0YjA5OWYzZDhjIn0.9AnaYuPc92uuYrUYA1TPXtMapqOrtAIajw0OSKnM7xI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/admin/signout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"admin",
+								"signout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "employee",
+			"item": [
+				{
+					"name": "signin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"EMP0001\",\r\n    \"password\": \"emp@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/employee/signin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employee",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTMzOTczNTUsInVzZXJuYW1lIjoiRU1QMDAwMSIsInV1aWQiOiI1YTk2NTg4MC0zZWQ1LTQyNDYtYWE4My1mZWJkODUxMzJiMDQifQ.GXWSiM_keWfu1sFVh3W8wM9_6yhmygTHbSx4vRJdFYo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/employee/signout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"employee",
+								"signout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTM2NDY3MTMsInVzZXJuYW1lIjoiRU1QMDAwMSIsInV1aWQiOiI1YjM4MGQ1Ni0wOWVlLTQzNmItODY4Ni0xZGRhZTE0Y2E4OWUifQ.poRm6tA-p2rb5q9XolBZvC0CYF_NXKH_Pt6XbZyMLHc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sanni\",\r\n    \"custId\": \"CUST0002\",\r\n    \"address\": \"Bangalore\",\r\n    \"phone\": \"7406551291\",\r\n    \"email\": \"sanniraj72@gmail.com\",\r\n    \"branchName\": \"Dummy name\",\r\n    \"branchAdd\": \"Bangalore\",\r\n    \"kyc\": null,\r\n    \"accounts\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/customer/add?empId=EMP0001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer",
+								"add"
+							],
+							"query": [
+								{
+									"key": "empId",
+									"value": "EMP0001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete customer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTMzOTczNTUsInVzZXJuYW1lIjoiRU1QMDAwMSIsInV1aWQiOiI1YTk2NTg4MC0zZWQ1LTQyNDYtYWE4My1mZWJkODUxMzJiMDQifQ.GXWSiM_keWfu1sFVh3W8wM9_6yhmygTHbSx4vRJdFYo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"CUST0001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/customer/delete?empId=EMP0001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "empId",
+									"value": "EMP0001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTM2NDY3MTMsInVzZXJuYW1lIjoiRU1QMDAwMSIsInV1aWQiOiI1YjM4MGQ1Ni0wOWVlLTQzNmItODY4Ni0xZGRhZTE0Y2E4OWUifQ.poRm6tA-p2rb5q9XolBZvC0CYF_NXKH_Pt6XbZyMLHc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"number\": \"ACCT0002\",\r\n    \"ifsc\": \"IFSC0001\",\r\n    \"type\": \"Saving\",\r\n    \"balance\": 10000,\r\n    \"openingDate\": \"16-02-2021\",\r\n    \"closingDate\": \"\",\r\n    \"status\": \"Active\",\r\n    \"transaction\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/account/add?empId=EMP0001&custId=CUST0002",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"account",
+								"add"
+							],
+							"query": [
+								{
+									"key": "empId",
+									"value": "EMP0001"
+								},
+								{
+									"key": "custId",
+									"value": "CUST0002"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "kyc",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTM0OTcxMjcsInVzZXJuYW1lIjoiRU1QMDAwMSIsInV1aWQiOiIxZmFjOTNkZC0xNzZhLTQ0ZTMtODcwMy0yMjhiMjM0NDY5MGIifQ.Ztu8QLD6wlK3E8qDYb3tb9YEr1JfZHfp5zck7ZJWC2Y",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "kycDoc",
+									"type": "file",
+									"src": "/C:/Users/sannraj/Downloads/Invoice OD120213439547974000-converted.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/customer/kyc?empId=EMP0001&custId=CUST0001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer",
+								"kyc"
+							],
+							"query": [
+								{
+									"key": "empId",
+									"value": "EMP0001"
+								},
+								{
+									"key": "custId",
+									"value": "CUST0001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get customer detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTM1NjAyNzYsInVzZXJuYW1lIjoiRU1QMDAwMSIsInV1aWQiOiI4ODU5ZGNhMC1hYTMyLTRhZjQtYmY2OC0wYjRmYWQ3ODdkYmUifQ.EVUJW1Ym3tMtvHcsc8758FjwLkmRNnoRiL4gaG9mdFo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/customer/get?empId=EMP0001&custId=CUST0001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customer",
+								"get"
+							],
+							"query": [
+								{
+									"key": "empId",
+									"value": "EMP0001"
+								},
+								{
+									"key": "custId",
+									"value": "CUST0001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTM1NjI0MTMsInVzZXJuYW1lIjoiRU1QMDAwMSIsInV1aWQiOiI4YWFkZTA4ZC04NjY2LTRkZmYtYjM5YS1kMTc0ZWU0NzhiNGQifQ.4i6wXKWe77SvENP9syUyxprL1I1sYWhOJp31CnKVdTs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/account/get?empId=EMP0001&custId=CUST0001&acctId=ACCT0001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"account",
+								"get"
+							],
+							"query": [
+								{
+									"key": "empId",
+									"value": "EMP0001"
+								},
+								{
+									"key": "custId",
+									"value": "CUST0001"
+								},
+								{
+									"key": "acctId",
+									"value": "ACCT0001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "transfer amount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTM2NDczNzgsInVzZXJuYW1lIjoiRU1QMDAwMSIsInV1aWQiOiJjYjkyMjM5NS02MGE4LTQwZDgtYTJlMS00M2Q3Y2NjNmZmNzcifQ.mzAW8MJESCaJk1PRQWx8R6F4suN-g_I2NVd5UPUenOo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"srcAccount\": \"ACCT0002\",\r\n    \"srcCustomer\": \"CUST0002\",\r\n    \"destAccount\": \"ACCT0001\",\r\n    \"destCustomer\": \"CUST0001\",\r\n    \"amount\": 2025\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/account/transfer?empId=EMP0001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"account",
+								"transfer"
+							],
+							"query": [
+								{
+									"key": "empId",
+									"value": "EMP0001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "account statement",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2MTM5NzkzMDAsInVzZXJuYW1lIjoiRU1QMDAwMSIsInV1aWQiOiI1MzU5NzJlMy1iNmNmLTQ1ODEtOGY1Ny0wNjZiMzYwY2U3ZDkifQ.EIrv6UXiv0K6tvh1PUz4lysVC_otwbfk98049Pdnl_w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/account/statement?empId=EMP0001&custId=CUST0001&acctId=ACCT0001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"account",
+								"statement"
+							],
+							"query": [
+								{
+									"key": "empId",
+									"value": "EMP0001"
+								},
+								{
+									"key": "custId",
+									"value": "CUST0001"
+								},
+								{
+									"key": "acctId",
+									"value": "ACCT0001"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
