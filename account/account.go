@@ -6,7 +6,10 @@ import (
 	"eltropy/model"
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"time"
 
+	"github.com/jung-kurt/gofpdf"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -266,6 +269,10 @@ func TransferMoney(w http.ResponseWriter, r *http.Request) {
 		for i, acct := range srcCustomer.Accounts {
 			if acct.Number == transfer.SrcAccount {
 				srcCustomer.Accounts[i].Balance = acct.Balance - transfer.Amount
+				srcCustomer.Accounts[i].Transactions = append(srcCustomer.Accounts[i].Transactions, model.Transaction{
+					Date:   time.Now().Format("01-02-2006"),
+					Amount: -transfer.Amount,
+				})
 				collection.UpdateOne(
 					context.TODO(),
 					bson.M{"custId": transfer.SrcCustomer},
@@ -280,6 +287,10 @@ func TransferMoney(w http.ResponseWriter, r *http.Request) {
 		for i, acct := range destCustomer.Accounts {
 			if acct.Number == transfer.DestAccount {
 				destCustomer.Accounts[i].Balance = acct.Balance + transfer.Amount
+				destCustomer.Accounts[i].Transactions = append(destCustomer.Accounts[i].Transactions, model.Transaction{
+					Date:   time.Now().Format("01-02-2006"),
+					Amount: transfer.Amount,
+				})
 				collection.UpdateOne(
 					context.TODO(),
 					bson.M{"custId": transfer.DestCustomer},
@@ -300,6 +311,97 @@ func TransferMoney(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(model.Response{
 			Code: http.StatusUnauthorized,
 			Msg:  "unauthorized",
+		})
+	}
+}
+
+// PrintAccountStatement - Print statement of account in pdf
+func PrintAccountStatement(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json")
+	// Extract token
+	ad, err := helper.ExtractToken(r)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "Unauthorized",
+		})
+		return
+	}
+
+	// Fetch auth from redis
+	username, err := helper.FetchAuth(ad)
+	if username == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusUnauthorized,
+			Msg:  "Unauthorized",
+		})
+		return
+	}
+
+	values := r.URL.Query()
+	empID := values.Get("empId")
+	if empID == username {
+		// Generate statement
+		custID := values.Get("custId")
+		acctID := values.Get("acctId")
+		client, _ := helper.GetMongoClient()
+		collection := client.Database(helper.DB).Collection(helper.CustomerCollection)
+		sr := collection.FindOne(context.TODO(), bson.M{"custId": custID})
+		if sr.Err() != nil {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(model.Response{
+				Code: http.StatusNotFound,
+				Msg:  "customer not found",
+			})
+			return
+		}
+		var customer model.Customer
+		sr.Decode(&customer)
+		var transaction []model.Transaction
+		for _, acct := range customer.Accounts {
+			if acct.Number == acctID {
+				transaction = acct.Transactions
+				break
+			}
+		}
+		if transaction == nil {
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(model.Response{
+				Code: http.StatusNotFound,
+				Msg:  "no transactions found for this account, acctId-" + acctID,
+			})
+			return
+		}
+		pdf := gofpdf.New("P", "mm", "A4", "")
+		pdf.AddPage()
+		for i, tran := range transaction {
+			pdf.SetFont("Arial", "B", 16)
+			pdf.Line(pdf.GetX(), pdf.GetY(), pdf.GetX()+180, pdf.GetY())
+			pdf.MultiCell(40, 10, "Transaction "+strconv.Itoa(i+1), "", "", false)
+
+			pdf.SetFont("Arial", "I", 16)
+			pdf.Cell(40, 10, "Date:")
+			pdf.MultiCell(40, 10, tran.Date, "", "", false)
+
+			pdf.Cell(40, 10, "Amount:")
+			pdf.MultiCell(40, 10, strconv.FormatFloat(tran.Amount, byte('f'), 2, 64), "", "", false)
+		}
+		err := pdf.OutputFileAndClose("statement/" + "statement_" + acctID + ".pdf")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(model.Response{
+				Code: http.StatusInternalServerError,
+				Msg:  "error in generating statement",
+			})
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(model.Response{
+			Code: http.StatusOK,
+			Msg:  "statement generated",
 		})
 	}
 }

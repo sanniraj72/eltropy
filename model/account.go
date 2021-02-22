@@ -14,7 +14,6 @@ type Account struct {
 type Transaction struct {
 	Date   string  `bson:"date"`
 	Amount float64 `bson:"amount"`
-	Type   string  `bson:"type"` // debited/credited
 }
 
 type Transfer struct {

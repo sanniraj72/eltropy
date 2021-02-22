@@ -33,5 +33,6 @@ func main() {
 	router.HandleFunc("/customer/get", customer.GetCustomer).Methods(http.MethodGet)
 	router.HandleFunc("/account/get", account.GetAccountBalance).Methods(http.MethodGet)
 	router.HandleFunc("/account/transfer", account.TransferMoney).Methods(http.MethodPut)
+	router.HandleFunc("/account/statement", account.PrintAccountStatement).Methods(http.MethodGet)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
